@@ -34,9 +34,9 @@ services:
     links:
       - db:database
     environment:
-        ETHEREUM_JSONRPC_HTTP_URL: http://34.123.142.246:8545/
-        ETHEREUM_JSONRPC_TRACE_URL: http://34.123.142.246:8545/
-        ETHEREUM_JSONRPC_WS_URL: ws://34.123.142.246:8545/
+        ETHEREUM_JSONRPC_HTTP_URL: http://reeftestnet1-reefethrpc-9baccd-72-60-35-83.traefik.me
+        ETHEREUM_JSONRPC_TRACE_URL: http://reeftestnet1-reefethrpc-9baccd-72-60-35-83.traefik.me/
+        ETHEREUM_JSONRPC_WS_URL: ws://reeftestnet1-reefethrpc-9baccd-72-60-35-83.traefik.me/
         CHAIN_ID: '1339'
 
   nft_media_handler:
