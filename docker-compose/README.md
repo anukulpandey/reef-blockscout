@@ -87,6 +87,7 @@ Notes:
 - The default Reef RPC is `http://eth.reef-node-reefdevcluster-808c46-72-60-35-83.sslip.io/`.
 - `ECTO_USE_SSL=false` is required for the bundled local Postgres container. Managed Postgres services may need `ECTO_USE_SSL=true` instead.
 - `DISABLE_REALTIME_INDEXER=true` is the default in `backend-only.yml` because the current Reef RPC URL is HTTP-only. If you later get a working WebSocket RPC URL, set `ETHEREUM_JSONRPC_WS_URL` and `DISABLE_REALTIME_INDEXER=false`.
+- `INDEXER_DISABLE_PENDING_TRANSACTIONS_FETCHER=true` is the default in `backend-only.yml` because the current Reef RPC does not expose `txpool_content`, and leaving the fetcher on causes repeated `Method not found` errors plus noisy endpoint health flapping.
 - To stop the stack: `docker compose -f backend-only.yml down`
 
 ## Dokploy
@@ -116,6 +117,7 @@ COIN_NAME=Reef
 NETWORK=Reef
 SUBNETWORK=Mainnet
 DISABLE_REALTIME_INDEXER=true
+INDEXER_DISABLE_PENDING_TRANSACTIONS_FETCHER=true
 ```
 
 Once deployed, your API base URL will be:
