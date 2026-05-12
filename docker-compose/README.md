@@ -85,6 +85,7 @@ Examples:
 Notes:
 
 - The default Reef RPC is `http://eth.reef-node-reefdevcluster-808c46-72-60-35-83.sslip.io/`.
+- `ECTO_USE_SSL=false` is required for the bundled local Postgres container. Managed Postgres services may need `ECTO_USE_SSL=true` instead.
 - `DISABLE_REALTIME_INDEXER=true` is the default in `backend-only.yml` because the current Reef RPC URL is HTTP-only. If you later get a working WebSocket RPC URL, set `ETHEREUM_JSONRPC_WS_URL` and `DISABLE_REALTIME_INDEXER=false`.
 - To stop the stack: `docker compose -f backend-only.yml down`
 
@@ -105,6 +106,7 @@ Recommended environment variables for Dokploy:
 POSTGRES_DB=blockscout
 POSTGRES_USER=blockscout
 POSTGRES_PASSWORD=change-me
+ECTO_USE_SSL=false
 SECRET_KEY_BASE=replace-with-a-long-random-string
 ETHEREUM_JSONRPC_HTTP_URL=http://eth.reef-node-reefdevcluster-808c46-72-60-35-83.sslip.io/
 ETHEREUM_JSONRPC_TRACE_URL=http://eth.reef-node-reefdevcluster-808c46-72-60-35-83.sslip.io/

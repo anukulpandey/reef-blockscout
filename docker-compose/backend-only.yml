@@ -41,6 +41,7 @@ services:
       - 'host.docker.internal:host-gateway'
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-blockscout}:${POSTGRES_PASSWORD:-change-me}@db:5432/${POSTGRES_DB:-blockscout}
+      ECTO_USE_SSL: ${ECTO_USE_SSL:-false}
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-change-this-in-production}
       ETHEREUM_JSONRPC_VARIANT: ${ETHEREUM_JSONRPC_VARIANT:-geth}
       ETHEREUM_JSONRPC_TRANSPORT: http
