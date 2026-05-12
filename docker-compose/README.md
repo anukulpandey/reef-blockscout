@@ -48,6 +48,7 @@ The repo contains built-in configs for different JSON RPC clients without need t
 | Nethermind, OpenEthereum    | `docker-compose -f nethermind.yml up -d`    |
 | Anvil    | `docker-compose -f anvil.yml up -d`    |
 | HardHat network    | `docker-compose -f hardhat-network.yml up -d`    |
+| Reef backend only (API)    | `docker-compose -f backend-only.yml up -d`    |
 
 - Running only explorer without DB: `docker-compose -f external-db.yml up -d`. In this case, no db container is created. And it assumes that the DB credentials are provided through `DATABASE_URL` environment variable on the backend container.
 - Running explorer with external backend: `docker-compose -f external-backend.yml up -d`
@@ -55,7 +56,69 @@ The repo contains built-in configs for different JSON RPC clients without need t
 - Running all microservices: `docker-compose -f microservices.yml up -d`
 - Running only explorer without microservices: `docker-compose -f no-services.yml up -d`
 
-All of the configs assume the Ethereum JSON RPC is running at http://localhost:8545.
+All of the built-in local client configs assume the Ethereum JSON RPC is running at http://localhost:8545. The dedicated `backend-only.yml` file is preconfigured for the Reef RPC listed below.
+
+## Backend-only API for Reef
+
+If you only need the Blockscout backend API for Reef, use the dedicated backend-only compose file:
+
+```bash
+cd ./docker-compose
+docker compose -f backend-only.yml up -d
+```
+
+This starts only:
+
+- Postgres
+- Redis
+- Blockscout backend
+
+The backend API will be available directly at:
+
+- `http://localhost:4000/api/v2/...`
+
+Examples:
+
+- `http://localhost:4000/api/v2/addresses/<address>/transactions`
+- `http://localhost:4000/api/v2/addresses/<address>`
+
+Notes:
+
+- The default Reef RPC is `http://eth.reef-node-reefdevcluster-808c46-72-60-35-83.sslip.io/`.
+- `DISABLE_REALTIME_INDEXER=true` is the default in `backend-only.yml` because the current Reef RPC URL is HTTP-only. If you later get a working WebSocket RPC URL, set `ETHEREUM_JSONRPC_WS_URL` and `DISABLE_REALTIME_INDEXER=false`.
+- To stop the stack: `docker compose -f backend-only.yml down`
+
+## Dokploy
+
+For Dokploy, prefer `backend-only.yml` because it uses Docker named volumes and `${VAR}` syntax, which works well with Dokploy's Docker Compose deployment flow.
+
+Recommended setup:
+
+1. Create a Docker Compose app in Dokploy.
+2. Point it at `docker-compose/backend-only.yml`.
+3. Add your environment variables in Dokploy's Environment tab.
+4. Add a domain in Dokploy's Domains tab and route it to container port `4000`.
+
+Recommended environment variables for Dokploy:
+
+```env
+POSTGRES_DB=blockscout
+POSTGRES_USER=blockscout
+POSTGRES_PASSWORD=change-me
+SECRET_KEY_BASE=replace-with-a-long-random-string
+ETHEREUM_JSONRPC_HTTP_URL=http://eth.reef-node-reefdevcluster-808c46-72-60-35-83.sslip.io/
+ETHEREUM_JSONRPC_TRACE_URL=http://eth.reef-node-reefdevcluster-808c46-72-60-35-83.sslip.io/
+CHAIN_ID=13939
+COIN=REEF
+COIN_NAME=Reef
+NETWORK=Reef
+SUBNETWORK=Mainnet
+DISABLE_REALTIME_INDEXER=true
+```
+
+Once deployed, your API base URL will be:
+
+- `https://your-blockscout-domain/api/v2/...`
 
 In order to stop launched containers, run `docker-compose -f config_file.yml down`, replacing `config_file.yml` with the file name of the config which was previously launched.
 

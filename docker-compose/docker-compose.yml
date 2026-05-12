@@ -34,10 +34,10 @@ services:
     links:
       - db:database
     environment:
-        ETHEREUM_JSONRPC_HTTP_URL: http://reeftestnet1-reefethrpc-dab87f-72-60-35-83.traefik.me/
-        ETHEREUM_JSONRPC_TRACE_URL: http://reeftestnet1-reefethrpc-dab87f-72-60-35-83.traefik.me/
-        ETHEREUM_JSONRPC_WS_URL: ws://reeftestnet1-reefethrpc-dab87f-72-60-35-83.traefik.me/
-        CHAIN_ID: '1339'
+        ETHEREUM_JSONRPC_HTTP_URL: http://eth.reef-node-reefdevcluster-808c46-72-60-35-83.sslip.io/
+        ETHEREUM_JSONRPC_TRACE_URL: http://eth.reef-node-reefdevcluster-808c46-72-60-35-83.sslip.io/
+        ETHEREUM_JSONRPC_WS_URL: ${ETHEREUM_JSONRPC_WS_URL:-}
+        CHAIN_ID: '13939'
 
   nft_media_handler:
     depends_on:
