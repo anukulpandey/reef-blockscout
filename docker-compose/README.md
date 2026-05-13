@@ -52,6 +52,7 @@ The repo contains built-in configs for different JSON RPC clients without need t
 - Running only explorer without DB: `docker-compose -f external-db.yml up -d`. In this case, no db container is created. And it assumes that the DB credentials are provided through `DATABASE_URL` environment variable on the backend container.
 - Running explorer with external backend: `docker-compose -f external-backend.yml up -d`
 - Running explorer with external frontend: `FRONT_PROXY_PASS=http://host.docker.internal:3000/ docker-compose -f external-frontend.yml up -d`
+- Running only the hosted Reef frontend locally: `docker compose -p reef-hosted-frontend -f reef-hosted-frontend.yml up -d`
 - Running all microservices: `docker-compose -f microservices.yml up -d`
 - Running only explorer without microservices: `docker-compose -f no-services.yml up -d`
 
@@ -71,6 +72,60 @@ Descriptions of the ENVs are available
 
 - for [backend](https://docs.blockscout.com/setup/env-variables)
 - for [frontend](https://github.com/blockscout/frontend/blob/main/docs/ENVS.md).
+
+## Hosted Reef frontend only
+
+If your backend and RPC are already hosted elsewhere and you only want to run the frontend container, use `reef-hosted-frontend.yml`.
+
+Default values in this file are preconfigured for:
+
+- Backend API host: `reef-explorer-ipwkoo-6aeed5-72-60-35-83.sslip.io`
+- RPC URL: `http://eth.reef-node-reefdevcluster-808c46-72-60-35-83.sslip.io`
+- Chain ID: `13939`
+
+Run it locally:
+
+```bash
+cd ./docker-compose
+docker compose -p reef-hosted-frontend -f reef-hosted-frontend.yml up -d
+```
+
+The frontend will be available on `http://localhost:3000`.
+
+Important variables you may still want to override:
+
+- `NEXT_PUBLIC_APP_HOST` for the frontend's own public hostname
+- `NEXT_PUBLIC_APP_PROTOCOL` for the frontend's own public protocol
+- `NEXT_PUBLIC_STATS_API_HOST` if your stats service is exposed on a different URL
+- `NEXT_PUBLIC_VISUALIZE_API_HOST` if your visualizer service is exposed on a different URL
+
+Example:
+
+```bash
+cd ./docker-compose
+NEXT_PUBLIC_APP_HOST=reef-frontend.example.com \
+NEXT_PUBLIC_APP_PROTOCOL=https \
+docker compose -p reef-hosted-frontend -f reef-hosted-frontend.yml up -d
+```
+
+### Dokploy
+
+For Dokploy, use `reef-hosted-frontend.dokploy.yml`. It uses `expose: 3000` instead of publishing a host port, which fits Dokploy's routing model better.
+
+Recommended flow:
+
+1. Create a new Docker Compose app in Dokploy using your Git repository, or use the Raw provider and paste the file contents.
+2. Point Dokploy at `docker-compose/reef-hosted-frontend.dokploy.yml`.
+3. In Dokploy `Environment`, set at least:
+   - `NEXT_PUBLIC_APP_HOST=<your frontend domain>`
+   - `NEXT_PUBLIC_APP_PROTOCOL=https` if Dokploy serves the site over TLS
+4. In Dokploy `Domains`, add your frontend domain and route it to container port `3000`.
+5. Deploy.
+
+Notes:
+
+- Dokploy writes UI environment variables to a `.env` file. This compose file references `${...}` variables directly, so Dokploy will substitute them during deployment.
+- If the frontend is served over `https`, your browser will block calls to `http` backend or RPC endpoints as mixed content. In that case, switch the backend and RPC URLs to `https` as well, or serve the frontend over plain `http`.
 
 ## Running Docker containers via Makefile
 
