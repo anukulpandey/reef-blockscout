@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     ports:
       - target: 3000
-        published: "${FRONTEND_PORT:-0}"
+        published: "${FRONTEND_PORT:-3009}"
         protocol: tcp
     environment:
       HOSTNAME: ${HOSTNAME:-0.0.0.0}
