@@ -94,7 +94,7 @@ The frontend will be available on `http://localhost:3009`.
 
 Important variables you may still want to override:
 
-- `NEXT_PUBLIC_APP_HOST` for the frontend's own public hostname
+- `NEXT_PUBLIC_APP_HOST` for the frontend's own public hostname. Locally it defaults to `localhost:3009`
 - `NEXT_PUBLIC_APP_PROTOCOL` for the frontend's own public protocol
 - `NEXT_PUBLIC_STATS_API_HOST` if your stats service is exposed on a different URL
 - `NEXT_PUBLIC_VISUALIZE_API_HOST` if your visualizer service is exposed on a different URL
