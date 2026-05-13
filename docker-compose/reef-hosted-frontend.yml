@@ -9,6 +9,8 @@ services:
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     environment:
+      HOSTNAME: ${HOSTNAME:-0.0.0.0}
+      PORT: ${PORT:-3000}
       NEXT_PUBLIC_API_PROTOCOL: ${NEXT_PUBLIC_API_PROTOCOL:-http}
       NEXT_PUBLIC_API_HOST: ${NEXT_PUBLIC_API_HOST:-reef-explorer-ipwkoo-6aeed5-72-60-35-83.sslip.io}
       NEXT_PUBLIC_API_BASE_PATH: ${NEXT_PUBLIC_API_BASE_PATH:-/}
