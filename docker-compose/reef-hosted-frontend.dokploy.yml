@@ -10,13 +10,13 @@ services:
       HOSTNAME: ${HOSTNAME:-0.0.0.0}
       PORT: ${PORT:-3000}
       NEXT_PUBLIC_USE_NEXT_JS_PROXY: ${NEXT_PUBLIC_USE_NEXT_JS_PROXY:-false}
-      NEXT_PUBLIC_API_PROTOCOL: ${NEXT_PUBLIC_API_PROTOCOL:-http}
-      NEXT_PUBLIC_API_HOST: ${NEXT_PUBLIC_API_HOST:-reef-explorer-ipwkoo-6aeed5-72-60-35-83.sslip.io}
+      NEXT_PUBLIC_API_PROTOCOL: ${NEXT_PUBLIC_API_PROTOCOL:-https}
+      NEXT_PUBLIC_API_HOST: ${NEXT_PUBLIC_API_HOST:-explorer-frontend-y3vx1v-aaa30a-72-60-35-83.sslip.io}
       NEXT_PUBLIC_API_BASE_PATH: ${NEXT_PUBLIC_API_BASE_PATH:-/}
-      NEXT_PUBLIC_API_WEBSOCKET_PROTOCOL: ${NEXT_PUBLIC_API_WEBSOCKET_PROTOCOL:-ws}
+      NEXT_PUBLIC_API_WEBSOCKET_PROTOCOL: ${NEXT_PUBLIC_API_WEBSOCKET_PROTOCOL:-wss}
       NEXT_PUBLIC_STATS_API_HOST: ${NEXT_PUBLIC_STATS_API_HOST:-}
       NEXT_PUBLIC_STATS_API_BASE_PATH: ${NEXT_PUBLIC_STATS_API_BASE_PATH:-/}
-      NEXT_PUBLIC_VISUALIZE_API_HOST: ${NEXT_PUBLIC_VISUALIZE_API_HOST:-http://reef-explorer-ipwkoo-6aeed5-72-60-35-83.sslip.io}
+      NEXT_PUBLIC_VISUALIZE_API_HOST: ${NEXT_PUBLIC_VISUALIZE_API_HOST:-https://explorer-frontend-y3vx1v-aaa30a-72-60-35-83.sslip.io}
       NEXT_PUBLIC_VISUALIZE_API_BASE_PATH: ${NEXT_PUBLIC_VISUALIZE_API_BASE_PATH:-/}
       NEXT_PUBLIC_NETWORK_NAME: ${NEXT_PUBLIC_NETWORK_NAME:-Reef Dev Cluster}
       NEXT_PUBLIC_NETWORK_SHORT_NAME: ${NEXT_PUBLIC_NETWORK_SHORT_NAME:-Reef}
@@ -31,3 +31,15 @@ services:
       NEXT_PUBLIC_APP_HOST: ${NEXT_PUBLIC_APP_HOST:-explorer-frontend-y3vx1v-aaa30a-72-60-35-83.sslip.io}
       NEXT_PUBLIC_HOMEPAGE_CHARTS: "${NEXT_PUBLIC_HOMEPAGE_CHARTS:-['daily_txs']}"
       NEXT_PUBLIC_API_SPEC_URL: ${NEXT_PUBLIC_API_SPEC_URL:-https://raw.githubusercontent.com/blockscout/blockscout-api-v2-swagger/main/swagger.yaml}
+
+  proxy:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on:
+      - frontend
+    expose:
+      - "80"
+    environment:
+      BACK_PROXY_PASS: ${BACK_PROXY_PASS:-http://reef-explorer-ipwkoo-6aeed5-72-60-35-83.sslip.io}
+    volumes:
+      - ./reef-hosted-frontend.proxy.conf.template:/etc/nginx/templates/default.conf.template:ro
