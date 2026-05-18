@@ -79,13 +79,13 @@ If your backend and RPC are already hosted elsewhere and you only want to run th
 
 Default values in this file are preconfigured for:
 
-- Backend API host: `reef-explorer-ipwkoo-6aeed5-72-60-35-83.sslip.io`
-- RPC URL: `http://eth.reef-node-reefdevcluster-808c46-72-60-35-83.sslip.io`
+- Backend API host: `explorer-backend-sij6uw-1d3882-72-60-35-83.nip.io`
+- RPC URL: `https://eth.reef-node-reefdevcluster-808c46-72-60-35-83.nip.io/`
 - Chain ID: `13939`
 
 The Dokploy hosted frontend compose file now runs an Nginx edge proxy in front of the frontend container.
 The browser talks to the frontend domain for `/api/...` and `/socket/...`, and that proxy forwards those requests to `BACK_PROXY_PASS`.
-This avoids mixed-content issues when the frontend is served over `https` but the hosted Reef backend is only available over plain `http`.
+This avoids mixed-content issues when the frontend is served over `https` and keeps websocket traffic on the frontend origin even when the hosted Reef backend sits behind a separate TLS domain.
 
 Run it locally:
 
@@ -122,21 +122,22 @@ Recommended flow:
 1. Create a new Docker Compose app in Dokploy using your Git repository, or use the Raw provider and paste the file contents.
 2. Point Dokploy at `docker-compose/reef-hosted-frontend.dokploy.yml`.
 3. In Dokploy `Environment`, set at least:
-   - `NEXT_PUBLIC_APP_HOST=<your frontend domain>`
+   - `FRONTEND_PUBLIC_HOST=<your frontend domain>`
    - `NEXT_PUBLIC_APP_PROTOCOL=https` if Dokploy serves the site over TLS
-   - `BACK_PROXY_PASS=http://reef-explorer-ipwkoo-6aeed5-72-60-35-83.sslip.io`
+   - `BACK_PROXY_PASS=https://explorer-backend-sij6uw-1d3882-72-60-35-83.nip.io`
 4. In Dokploy `Domains`, add your frontend domain and route it to container port `80`.
 5. Deploy.
 
 Notes:
 
 - Dokploy writes UI environment variables to a `.env` file. This compose file references `${...}` variables directly, so Dokploy will substitute them during deployment.
+- `FRONTEND_PUBLIC_HOST` should match the exact public hostname users open in the browser. The Dokploy file uses it for the frontend's own API and websocket origin so requests stay on the same TLS domain.
 - The local compose file keeps the simpler direct-browser-to-backend setup and is intended for `http://localhost:3009`.
 - The Dokploy compose file keeps `NEXT_PUBLIC_USE_NEXT_JS_PROXY=false`, but it places an Nginx proxy in front of the frontend container. The browser uses the frontend domain for `/api` and `/socket`, and Nginx forwards those requests to `BACK_PROXY_PASS`.
 - Both hosted frontend compose files now leave `NEXT_PUBLIC_STATS_API_HOST` empty by default. That is intentional for this Reef setup: it prevents the frontend from switching into separate stats-service mode and keeps the `Daily transactions` chart on the working backend route `/api/v2/stats/charts/transactions`.
 - The local compose file still defaults `FRONTEND_PORT` to `3009`, and the frontend container itself also listens on that same port.
 - The Dokploy compose file keeps the frontend container on internal port `3000` and exposes the Nginx proxy on port `80`.
-- This proxy setup fixes the frontend websocket mixed-content problem for hosted HTTP backends by terminating browser traffic on the frontend domain and forwarding `/socket/...` upstream over plain HTTP from inside Docker.
+- This proxy setup fixes the frontend websocket mixed-content problem by terminating browser traffic on the frontend domain and forwarding `/socket/...` upstream to the hosted backend from inside Docker.
 
 ## Running Docker containers via Makefile
 
