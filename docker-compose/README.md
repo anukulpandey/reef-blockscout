@@ -123,6 +123,8 @@ Recommended flow:
 2. Point Dokploy at `docker-compose/reef-hosted-frontend.dokploy.yml`.
 3. In Dokploy `Environment`, set at least:
    - `FRONTEND_PUBLIC_HOST=<your frontend domain>`
+   - `NEXT_PUBLIC_API_HOST=explorer-backend-sij6uw-1d3882-72-60-35-83.nip.io`
+   - `NEXT_PUBLIC_VISUALIZE_API_HOST=https://explorer-backend-sij6uw-1d3882-72-60-35-83.nip.io`
    - `NEXT_PUBLIC_APP_PROTOCOL=https` if Dokploy serves the site over TLS
    - `BACK_PROXY_PASS=https://explorer-backend-sij6uw-1d3882-72-60-35-83.nip.io`
 4. In Dokploy `Domains`, add your frontend domain and route it to container port `80`.
@@ -131,7 +133,7 @@ Recommended flow:
 Notes:
 
 - Dokploy writes UI environment variables to a `.env` file. This compose file references `${...}` variables directly, so Dokploy will substitute them during deployment.
-- `FRONTEND_PUBLIC_HOST` should match the exact public hostname users open in the browser. The Dokploy file uses it for the frontend's own API and websocket origin so requests stay on the same TLS domain.
+- `FRONTEND_PUBLIC_HOST` should match the exact public hostname users open in the browser. The Dokploy file uses it for the frontend app's own host metadata, but API requests should point at the backend host through `NEXT_PUBLIC_API_HOST`.
 - The local compose file keeps the simpler direct-browser-to-backend setup and is intended for `http://localhost:3009`.
 - The Dokploy compose file keeps `NEXT_PUBLIC_USE_NEXT_JS_PROXY=false`, but it places an Nginx proxy in front of the frontend container. The browser uses the frontend domain for `/api` and `/socket`, and Nginx forwards those requests to `BACK_PROXY_PASS`.
 - Both hosted frontend compose files now leave `NEXT_PUBLIC_STATS_API_HOST` empty by default. That is intentional for this Reef setup: it prevents the frontend from switching into separate stats-service mode and keeps the `Daily transactions` chart on the working backend route `/api/v2/stats/charts/transactions`.
